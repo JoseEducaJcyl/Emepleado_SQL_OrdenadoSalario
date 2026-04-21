@@ -1,13 +1,44 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-void main() {
-  //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-  // to see how IntelliJ IDEA suggests fixing it.
-  IO.println(String.format("Hello and welcome!"));
+// Importes necesarios para el programa
+import java.sql.*;
 
-  for (int i = 1; i <= 5; i++) {
-    //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-    // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-    IO.println("i = " + i);
-  }
+// Clase Main para la ejecucion del programa
+public class Main {
+    // El método main lanza SQLException (delega la gestión de errores)
+    public static void main(String[] args) throws SQLException {
+        // Datos para conectarse a la base de datos
+        String url = "jdbc:oracle:thin:@//localhost:1521/xe"; // Cambia según tu BD
+        String usuario = "JAVA";
+        String contraseña = "12345";
+
+        // Try-catch con recursos para intentar conectarse
+        try (Connection conn = DriverManager.getConnection(url, usuario, contraseña);
+             // Objeto Statement para ejecutar consultas SQL
+             Statement stmt = conn.createStatement()) {
+
+            // Consulta SQL que obtiene todos los empleados ordenados por salario de mayor a menor
+            String sql = "SELECT ID, NOMBRE, SALARIO, DEPARTAMENTO_ID FROM EMPLEADO ORDER BY SALARIO DESC";
+
+            // Ejecutar la consulta y obtener los resultados
+            ResultSet rs = stmt.executeQuery(sql);
+
+            // Recorrer todos los empleados y mostrarlos ordenados por salario
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                String nombre = rs.getString("NOMBRE");
+                int salario = rs.getInt("SALARIO");
+                int departamento_id = rs.getInt("DEPARTAMENTO_ID");
+
+                // Mostrar los datos de cada empleado
+                System.out.println("Datos: ");
+                System.out.println("ID: " + id);
+                System.out.println("Nombre: " + nombre);
+                System.out.println("Salario: " + salario);
+                System.out.println("Departamento: " + departamento_id);
+            }
+
+        } catch(SQLException e){
+            // Capturar y mostrar cualquier error de base de datos
+            System.out.println("Error al mostrar la tabla: " + e.getMessage());
+        }
+    }
 }
